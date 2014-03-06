@@ -1,0 +1,48 @@
+Nume: 	Dimcica Tudor
+Grupa: 	321CC
+
+Implementare:
+
+Mi-am definit propria mea structura, care se initalizeaza cu valorile
+structurii world si are in plus campul direction ce poate fi NIL sau un
+punct cardinal cu perechea de coordonate asociata urmatoarei mutari in
+directia respectiva. Acest slot va avea aceiasi valoare cu unul dintre
+facturile definite de la inceput, numite directions.
+
+Regula init_world initializeaza my-world dupa regulile precizate mai sus.
+
+Regula salt_jucator plaseaza mingea in aer "pe" un jucator disponibil din
+jurul mingii si se disting doua situatii: prima cand mingea este jos pe 
+un punct al terenului liber, iar cea de a doua cand mingea este in aer 
+"pe" un jucator. Cand mingea este pe un punct liber al terenului, directia
+este setata pe NIL, iar cand mingea ajunge "pe" un jucator directia este
+setata astfel incat saltul mingii sa continue pe directia dictata de saltul
+anterior. In aceasta regula, campul moves nu se modifica deloc.
+
+Regula salt_ground plaseaza mingea inapoi pe un punct liber din teren plecand
+de "pe" un om. Directia saltului este aceiasi cu directia saltului precedent.
+De data aceasta campul moves se modifica, concatenandu-se la acesta noua
+pozitie pe care a ajuns mingea. La ajungerea pe un punct liber din teren
+directia se reseteaza la NIL.
+
+Regula winner verifica daca mingea a ajuns pe ultima linie a terenului, si
+daca da introduce in baza de cunostinte faptul win.
+
+Regula remove_winning_worlds verifica daca exista faptul win in baza de
+cunostinte si daca da elimina toate faptele de tip my-world cu id-ul egal
+cu id-ul faptului win.
+
+Regula remove_directions scoate din baza de cunostinte faptele de tip
+directions. Regula remove_all_worlds elimina toate lumile de tip my-world.
+Aceste doua reguli au salience-ul cel mai mic deoarece trebuie executate
+ultimele. Rolul lor este de a curata baza de cunostinte de faptele nedorite
+ramase dupa rularea algoritmului bazat pe regulile anterioare.
+
+Conform regulilor descrise mai sus, algoritmul rezultat cauta toate
+posibilitatile de salt a mingii peste unu sau mai multi oameni situati in
+vecinatatea mingii. In urma identificarii unui salt al mingii pe o pozitie
+castigatoare se introduce faptul win si se incepe curatarea faptelor ce au
+devenit inutile.
+
+
+
