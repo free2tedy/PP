@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Parser</title><link href="ocean.css" rel="stylesheet" type="text/css" title="Ocean" /><script src="haddock-util.js" type="text/javascript"></script><script type="text/javascript">//<![CDATA[
+window.onload = function () {pageLoad();setSynopsis("mini_Parser.html");};
+//]]>
+</script></head><body><div id="package-header"><ul class="links" id="page-menu"><li><a href="index.html">Contents</a></li><li><a href="doc-index.html">Index</a></li></ul><p class="caption empty">&nbsp;</p></div><div id="content"><div id="module-header"><table class="info"><tr><th>Safe Haskell</th><td>Safe-Infered</td></tr></table><p class="caption">Parser</p></div><div id="description"><p class="caption">Description</p><div class="doc"><p>A parsing module, adapted from
+&quot;Haskell: The Craft of Functional Programming&quot;, 2nd ed., S. Thompson.
+</p></div></div><div id="synopsis"><p id="control.syn" class="caption expander" onclick="toggleSection('syn')">Synopsis</p><ul id="section.syn" class="hide" onclick="toggleSection('syn')"><li class="src short"><span class="keyword">type</span> <a href="#t:Parser">Parser</a> a b = [a] -&gt; [(b, [a])]</li><li class="src short"><a href="#v:none">none</a> ::  <a href="Parser.html#t:Parser">Parser</a> a b</li><li class="src short"><a href="#v:success">success</a> ::  b -&gt; <a href="Parser.html#t:Parser">Parser</a> a b</li><li class="src short"><a href="#v:token">token</a> :: Eq a =&gt; a -&gt; <a href="Parser.html#t:Parser">Parser</a> a a</li><li class="src short"><a href="#v:spot">spot</a> ::  (a -&gt; Bool) -&gt; <a href="Parser.html#t:Parser">Parser</a> a a</li><li class="src short"><a href="#v:alt">alt</a> ::  <a href="Parser.html#t:Parser">Parser</a> a b -&gt; <a href="Parser.html#t:Parser">Parser</a> a b -&gt; <a href="Parser.html#t:Parser">Parser</a> a b</li><li class="src short"><a href="#v:-62--42--62-">(&gt;*&gt;)</a> ::  <a href="Parser.html#t:Parser">Parser</a> a b -&gt; <a href="Parser.html#t:Parser">Parser</a> a c -&gt; <a href="Parser.html#t:Parser">Parser</a> a (b, c)</li><li class="src short"><a href="#v:transform">transform</a> ::  <a href="Parser.html#t:Parser">Parser</a> a b -&gt; (b -&gt; c) -&gt; <a href="Parser.html#t:Parser">Parser</a> a c</li><li class="src short"><a href="#v:optional">optional</a> ::  <a href="Parser.html#t:Parser">Parser</a> a b -&gt; <a href="Parser.html#t:Parser">Parser</a> a [b]</li><li class="src short"><a href="#v:maxOptional">maxOptional</a> ::  <a href="Parser.html#t:Parser">Parser</a> a b -&gt; <a href="Parser.html#t:Parser">Parser</a> a [b]</li><li class="src short"><a href="#v:list">list</a> ::  <a href="Parser.html#t:Parser">Parser</a> a b -&gt; <a href="Parser.html#t:Parser">Parser</a> a [b]</li><li class="src short"><a href="#v:neList">neList</a> ::  <a href="Parser.html#t:Parser">Parser</a> a b -&gt; <a href="Parser.html#t:Parser">Parser</a> a [b]</li><li class="src short"><a href="#v:maxList">maxList</a> ::  <a href="Parser.html#t:Parser">Parser</a> a b -&gt; <a href="Parser.html#t:Parser">Parser</a> a [b]</li><li class="src short"><a href="#v:maxNeList">maxNeList</a> ::  <a href="Parser.html#t:Parser">Parser</a> a b -&gt; <a href="Parser.html#t:Parser">Parser</a> a [b]</li><li class="src short"><a href="#v:spotWhile0">spotWhile0</a> ::  (a -&gt; Bool) -&gt; <a href="Parser.html#t:Parser">Parser</a> a [a]</li><li class="src short"><a href="#v:spotWhile1">spotWhile1</a> ::  (a -&gt; Bool) -&gt; <a href="Parser.html#t:Parser">Parser</a> a [a]</li><li class="src short"><a href="#v:result">result</a> ::  <a href="Parser.html#t:Parser">Parser</a> a b -&gt; [a] -&gt; b</li></ul></div><div id="interface"><h1>Documentation</h1><div class="top"><p class="src"><span class="keyword">type</span> <a name="t:Parser" class="def">Parser</a> a b = [a] -&gt; [(b, [a])]</p><div class="doc"><p>The type of parsing functions.
+</p><p>They take a list of objects of type <code>a</code> e.g., characters, and return a list
+of successful parses. Each parse is represented as a pair between the extracted
+object, of type <code>b</code> e.g., integer, and the list of objects designating
+the remaining input.
+</p><p>Examples are given below, where <code>bracket</code> and <code>number</code> are parsers:
+</p><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>bracket &quot;(xyz)&quot;
+</code></strong>[('(', &quot;xyz)&quot;)]         - one successful parse
+</pre><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>number 23
+</code></strong>[(2, &quot;3&quot;), (23, &quot;&quot;)]    - two successful parses
+</pre><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>bracket 234
+</code></strong>[]                      - no successful parse 
+</pre></div></div><div class="top"><p class="src"><a name="v:none" class="def">none</a> ::  <a href="Parser.html#t:Parser">Parser</a> a b</p><div class="doc"><p>Never parses anything, always returning <code>[]</code>.
+</p></div></div><div class="top"><p class="src"><a name="v:success" class="def">success</a> ::  b -&gt; <a href="Parser.html#t:Parser">Parser</a> a b</p><div class="doc"><p>Parses an explicitly given value, without consuming any input.
+</p><p>Examples:
+</p><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>success 23 &quot;abc&quot;
+</code></strong>[(23, &quot;abc&quot;)]
+</pre></div></div><div class="top"><p class="src"><a name="v:token" class="def">token</a> :: Eq a =&gt; a -&gt; <a href="Parser.html#t:Parser">Parser</a> a a</p><div class="doc"><p>Recognizes a given token.
+</p><p>Examples:
+</p><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>token 'a' &quot;abc&quot;
+</code></strong>[('a', &quot;bc&quot;)]
+</pre><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>token 'a' &quot;bbc&quot;
+</code></strong>[]
+</pre></div></div><div class="top"><p class="src"><a name="v:spot" class="def">spot</a> ::  (a -&gt; Bool) -&gt; <a href="Parser.html#t:Parser">Parser</a> a a</p><div class="doc"><p>Recognizes a token that satisfies a given property.
+</p><p>Examples:
+</p><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>spot isLetter &quot;abc&quot;
+</code></strong>[('a', &quot;bc&quot;)]
+</pre><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>spot isLetter &quot;123&quot;
+</code></strong>[]
+</pre><p><code><a href="Parser.html#v:token">token</a></code> can be defined starting from <code>spot</code> as below (any of the two options):
+</p><ul><li><pre>token t  = spot (== t)</pre></li><li><pre>token    = spot . (==)</pre></li></ul></div></div><div class="top"><p class="src"><a name="v:alt" class="def">alt</a> ::  <a href="Parser.html#t:Parser">Parser</a> a b -&gt; <a href="Parser.html#t:Parser">Parser</a> a b -&gt; <a href="Parser.html#t:Parser">Parser</a> a b</p><div class="doc"><p>The alternative between two parsers.
+</p><p>The parsing succeeds if any of the two parsers is able to parse.
+It simply concatenates the lists of parses obtained by the two parsers.
+</p><p>By employing the infix notation, <code>`alt`</code>, any number of parsers can be 
+legibly chained.
+</p><p>Examples:
+</p><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>((token 'a') `alt` (token 'b') `alt` (spot isDigit)) &quot;abc&quot;
+</code></strong>[('a', &quot;bc&quot;)]
+</pre><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>((token 'a') `alt` (token 'b') `alt` (spot isDigit)) &quot;123&quot;
+</code></strong>[('1', &quot;23&quot;)]
+</pre></div></div><div class="top"><p class="src"><a name="v:-62--42--62-" class="def">(&gt;*&gt;)</a> ::  <a href="Parser.html#t:Parser">Parser</a> a b -&gt; <a href="Parser.html#t:Parser">Parser</a> a c -&gt; <a href="Parser.html#t:Parser">Parser</a> a (b, c)</p><div class="doc"><p>The concatenation of two parsers, using a right-associative infix operator.
+</p><p>The parsing succeeds if the first parser is able to parse,
+starting at the beginning of the input, and the second one
+is able to parse, starting from the remainder of the input.
+</p><p>Examples:
+</p><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>((token 'a') &gt;*&gt; (token 'b') &gt;*&gt; (spot isDigit)) &quot;ab2p&quot;
+</code></strong>[(('a', ('b', '2')), &quot;p&quot;)]
+</pre><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>((token 'a') &gt;*&gt; (token 'b') &gt;*&gt; (spot isDigit)) &quot;abp&quot;
+</code></strong>[]
+</pre></div></div><div class="top"><p class="src"><a name="v:transform" class="def">transform</a> ::  <a href="Parser.html#t:Parser">Parser</a> a b -&gt; (b -&gt; c) -&gt; <a href="Parser.html#t:Parser">Parser</a> a c</p><div class="doc"><p>Applies a given function onto the result of a given parser.
+</p><p>Examples:
+</p><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>((spot isLetter) `transform` toUpper) &quot;abc&quot;
+</code></strong>[('A', &quot;bc&quot;)]
+</pre></div></div><div class="top"><p class="src"><a name="v:optional" class="def">optional</a> ::  <a href="Parser.html#t:Parser">Parser</a> a b -&gt; <a href="Parser.html#t:Parser">Parser</a> a [b]</p><div class="doc"><p>Either recognizes an object or succeeds immediately,
+given a parser for that object.
+</p><p>The parse result is returned as a list, so an empty match may be indicated.
+</p><p>Examples:
+</p><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>optional (token 'a') &quot;a&quot;
+</code></strong>[(&quot;&quot;, &quot;a&quot;), (&quot;a&quot;, &quot;&quot;)]
+</pre><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>optional (token 'a') &quot;b&quot;
+</code></strong>[(&quot;&quot;, &quot;b&quot;)]
+</pre></div></div><div class="top"><p class="src"><a name="v:maxOptional" class="def">maxOptional</a> ::  <a href="Parser.html#t:Parser">Parser</a> a b -&gt; <a href="Parser.html#t:Parser">Parser</a> a [b]</p><div class="doc"><p>Recognizes an object, if it is present, given a parser for that object.
+</p><p>The parse result is returned as a list, so an empty match may be indicated.
+</p><p>Examples:
+</p><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>maxOptional (token 'a') &quot;a&quot;
+</code></strong>[(&quot;a&quot;, &quot;&quot;)]
+</pre><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>maxOptional (token 'a') &quot;b&quot;
+</code></strong>[(&quot;&quot;, &quot;b&quot;)]
+</pre></div></div><div class="top"><p class="src"><a name="v:list" class="def">list</a> ::  <a href="Parser.html#t:Parser">Parser</a> a b -&gt; <a href="Parser.html#t:Parser">Parser</a> a [b]</p><div class="doc"><p>Parses possibly <em>empty</em> lists of objects, given a parser for a single object.
+</p><p>Examples:
+</p><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>(list (spot isLetter)) &quot;abc123&quot;
+</code></strong>[(&quot;&quot;, &quot;abc123&quot;), (&quot;a&quot;, &quot;bc123&quot;), (&quot;ab&quot;, &quot;c123&quot;), (&quot;abc&quot;, &quot;123&quot;)]
+</pre></div></div><div class="top"><p class="src"><a name="v:neList" class="def">neList</a> ::  <a href="Parser.html#t:Parser">Parser</a> a b -&gt; <a href="Parser.html#t:Parser">Parser</a> a [b]</p><div class="doc"><p>Parses <em>non-empty</em> lists of objects, given a parser for a single object.
+</p><p>Examples:
+</p><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>(neList (spot isLetter)) &quot;abc123&quot;
+</code></strong>[(&quot;a&quot;, &quot;bc123&quot;), (&quot;ab&quot;, &quot;c123&quot;), (&quot;abc&quot;, &quot;123&quot;)]
+</pre></div></div><div class="top"><p class="src"><a name="v:maxList" class="def">maxList</a> ::  <a href="Parser.html#t:Parser">Parser</a> a b -&gt; <a href="Parser.html#t:Parser">Parser</a> a [b]</p><div class="doc"><p>Parses the longest, possibly <em>empty</em>, list of objects,
+given a parser for a single object.
+</p><p>Examples:
+</p><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>(maxList (spot isLetter)) &quot;abc123&quot;
+</code></strong>[(&quot;abc&quot;, &quot;123&quot;)]
+</pre><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>(maxList (spot isLetter)) &quot;123&quot;
+</code></strong>[(&quot;&quot;, &quot;123&quot;)]
+</pre></div></div><div class="top"><p class="src"><a name="v:maxNeList" class="def">maxNeList</a> ::  <a href="Parser.html#t:Parser">Parser</a> a b -&gt; <a href="Parser.html#t:Parser">Parser</a> a [b]</p><div class="doc"><p>Parses the longest <em>non-empty</em> list of objects,
+given a parser for a single object.
+</p><p>Examples:
+</p><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>(maxNeList (spot isLetter)) &quot;abc123&quot;
+</code></strong>[(&quot;abc&quot;, &quot;123&quot;)]
+</pre><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>(maxNeList (spot isLetter)) &quot;123&quot;
+</code></strong>[]
+</pre></div></div><div class="top"><p class="src"><a name="v:spotWhile0" class="def">spotWhile0</a> ::  (a -&gt; Bool) -&gt; <a href="Parser.html#t:Parser">Parser</a> a [a]</p><div class="doc"><p>Parses the longest, possibly <em>empty</em>, list of objects,
+given a property that the objects must satisfy.
+</p><p>Examples:
+</p><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>(spotWhile0 isLetter) &quot;abc123&quot;
+</code></strong>[(&quot;abc&quot;, &quot;123&quot;)]
+</pre><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>(spotWhile0 isLetter) &quot;123&quot;
+</code></strong>[(&quot;&quot;, &quot;123&quot;)]
+</pre></div></div><div class="top"><p class="src"><a name="v:spotWhile1" class="def">spotWhile1</a> ::  (a -&gt; Bool) -&gt; <a href="Parser.html#t:Parser">Parser</a> a [a]</p><div class="doc"><p>Parses the longest non-empty list of objects,
+given a property that the objects must satisfy.
+</p><p>Examples:
+</p><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>(spotWhile1 isLetter) &quot;abc123&quot;
+</code></strong>[(&quot;abc&quot;, &quot;123&quot;)]
+</pre><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>(spotWhile1 isLetter) &quot;123&quot;
+</code></strong>[]
+</pre></div></div><div class="top"><p class="src"><a name="v:result" class="def">result</a> ::  <a href="Parser.html#t:Parser">Parser</a> a b -&gt; [a] -&gt; b</p><div class="doc"><p>Parses the entire input, using a given parser,
+and returns the corresponding result, stripping off the remainder part,
+which is empty anyway, since the input has been completely parsed.
+</p><p>Examples:
+</p><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>result (spotWhile1 isLetter) &quot;abc&quot;
+</code></strong>&quot;abc&quot;
+</pre><pre class="screen"><code class="prompt">&gt;&gt;&gt; </code><strong class="userinput"><code>result (spotWhile1 isLetter) &quot;abc1&quot;
+</code></strong>&lt;error&gt;
+</pre></div></div></div></div><div id="footer"><p>Produced by <a href="http://www.haskell.org/haddock/">Haddock</a> version 2.11.0</p></div></body></html>
